@@ -104,7 +104,7 @@ git push
 
 ## Project Status
 
-✅ Phase 1 Completed
+Phase 1 Completed
 
 - Project structure
 - Routing
