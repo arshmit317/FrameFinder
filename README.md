@@ -83,7 +83,7 @@ http://localhost:3000
 
 - Arshmit Grewal
 - Alessandro 
-- Saraha
+- Sarah
 - Chanh
 
 ## Branch Workflow
