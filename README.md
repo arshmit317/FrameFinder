@@ -1,40 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# FrameFinder
 
-## Getting Started
+This is a movie search web application built with **Next.js** and **TypeScript**. It allows users to search for movies, save favorites, track watched movies, and write reviews.
 
-First, run the development server:
+## Features
+
+- Search for movies
+- Save favorite movies
+- Keep track of watched movies
+- Write and view movie reviews
+- View movie details
+- Responsive design for desktop and mobile
+
+## Technologies Used
+
+- Next.js
+- React
+- TypeScript
+- CSS
+
+## Project Structure
+
+```
+film-finder/
+│
+├── components/
+│   ├── Header.tsx
+│   ├── Navbar.tsx
+│   ├── Footer.tsx
+│   ├── SearchBar.tsx
+│   ├── MovieCard.tsx
+│   ├── ReviewForm.tsx
+│   └── SavedMovieCard.tsx
+│
+├── pages/
+│   ├── index.tsx
+│   ├── search.tsx
+│   ├── saved.tsx
+│   ├── reviews.tsx
+│   ├── watched.tsx
+│   ├── about.tsx
+│   └── movie/
+│       └── [id].tsx
+│
+├── public/
+├── styles/
+└── README.md
+```
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/YOUR_USERNAME/film-finder.git
+```
+
+Go into the project folder:
+
+```bash
+cd film-finder
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open your browser and visit:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Team Members
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+- Arshmit Grewal
+- Alessandro 
+- Saraha
+- Chanh
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Branch Workflow
 
-## Learn More
+Before starting work:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+git pull
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+After making changes:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+git add .
+git commit -m "Describe your changes"
+git push
+```
 
-## Deploy on Vercel
+## Project Status
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+✅ Phase 1 Completed
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+- Project structure
+- Routing
+- Components
+- Basic layout
+
+## Future Improvements
+
+- Connect to a movie API
+- User authentication
+- Watchlists
+- Movie recommendations
