@@ -25,9 +25,27 @@ const sampleMovies = [
     genre: "Comedy",
   },
 ];
+type Movie = (typeof sampleMovies)[number];
 
 export default function Search() {
   const [searchTerm, setSearchTerm] = useState("");
+  
+  const saveMovie = (movie: Movie) => {
+  const savedMovies: Movie[] = JSON.parse(
+    localStorage.getItem("savedMovies") || "[]"
+  );
+
+  const alreadySaved = savedMovies.some(
+    (savedMovie: Movie) => savedMovie.id === movie.id
+  );
+
+  if (!alreadySaved) {
+    localStorage.setItem(
+      "savedMovies",
+      JSON.stringify([...savedMovies, movie])
+    );
+  }
+};
 
   const filteredMovies = sampleMovies.filter((movie) =>
     movie.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -56,6 +74,7 @@ export default function Search() {
               title={movie.title}
               year={movie.year}
               genre={movie.genre}
+              onSave={() => saveMovie(movie)}
             />
           ))
         )}

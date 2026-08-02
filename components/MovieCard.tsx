@@ -3,12 +3,14 @@ type MovieCardProps = {
   title: string;
   year: number;
   genre: string;
+  onSave: () => void;
 };
 
 export default function MovieCard({
   title,
   year,
   genre,
+  onSave,
 }: MovieCardProps) {
   return (
     <div className="movieCard">
@@ -22,7 +24,6 @@ export default function MovieCard({
         <strong>Genre:</strong> {genre}
       </p>
 
-      <button>Add to Saved</button>
-    </div>
+    <button onClick={onSave}>Add to Saved</button>    </div>
   );
 }
