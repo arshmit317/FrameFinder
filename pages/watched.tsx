@@ -9,10 +9,14 @@ export default function Watched() {
       <Header />
       <Navbar />
 
-      <main>
-        <h2>Watched Movies</h2>
+     <main>
+  <h2>Watched Movies</h2>
 
-        <SavedMovieCard />
+  <SavedMovieCard
+    title="Interstellar"
+    year={2014}
+    genre="Science Fiction"
+  />
       </main>
 
       <Footer />

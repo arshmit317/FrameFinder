@@ -5,7 +5,7 @@ import ReviewForm from "../components/ReviewForm";
 
 export default function Reviews() {
   return (
-    <>
+    <div className="pageContainer">
       <Header />
       <Navbar />
 
@@ -16,6 +16,6 @@ export default function Reviews() {
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }

@@ -9,6 +9,7 @@ export default function SearchBar({
 }: Props) {
   return (
     <input
+      className="searchBar"
       type="text"
       placeholder="Search for a movie..."
       value={searchTerm}

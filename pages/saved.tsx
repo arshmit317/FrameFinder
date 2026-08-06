@@ -36,7 +36,7 @@ export default function Saved() {
   };
 
   return (
-    <>
+  <div className="pageContainer">
       <Header />
       <Navbar />
 
@@ -59,6 +59,6 @@ export default function Saved() {
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }

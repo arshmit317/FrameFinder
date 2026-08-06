@@ -52,7 +52,7 @@ export default function Search() {
   );
 
   return (
-    <>
+        <div className="pageContainer">
       <Header />
       <Navbar />
 
@@ -81,6 +81,6 @@ export default function Search() {
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }

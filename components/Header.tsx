@@ -1,7 +1,9 @@
+import styles from "./Header.module.css";
+
 export default function Header() {
   return (
-    <header>
-      <h1> FrameFinder </h1>
+    <header className={styles.header}>
+      <h1 className={styles.title}>FrameFinder</h1>
     </header>
   );
 }

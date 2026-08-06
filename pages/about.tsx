@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 
 export default function About() {
   return (
-    <>
+    <div className="pageContainer">
       <Header />
       <Navbar />
 
@@ -12,13 +12,12 @@ export default function About() {
         <h2>About Film Finder</h2>
 
         <p>
-          Film Finder is a movie search application that helps users discover
-          movies, save favorites, keep track of watched films, and write
-          reviews.
+          FrameFinder helps users discover, save, review, and track their
+          favorite movies.
         </p>
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }
