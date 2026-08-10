@@ -58,34 +58,127 @@ body {
   width: 100%;
 }
 
-.reviewForm {
+--added by chanh for movie selection in review
+.reviewForm { 
+  display: flex; 
+  flex-direction: column; 
+  max-width: 600px; 
+  margin: 30px auto; 
+  padding: 20px; 
+} 
+
+.reviewForm label { 
+  color: white; 
+  font-size: 1rem; 
+  font-weight: bold; 
+  margin-bottom: 8px; 
+}
+
+.movieSelect { 
+  width: 100%;
+  padding: 12px; 
+  margin-bottom: 20px; 
+  border: 1px solid #334155; 
+  border-radius: 8px; 
+  background-color: #1e293b; 
+  color: white; 
+  font-size: 1rem; 
+  cursor: pointer; 
+} 
+
+.movieSelect:focus { 
+  outline: none; 
+  border-color: #e11d48; 
+} 
+
+.reviewTextarea { 
+  width: 100%; 
+  min-height: 150px; 
+  padding: 12px; 
+  border: 1px solid #334155; 
+  border-radius: 8px; 
+  background-color: #1e293b; 
+  color: white; 
+  font-size: 1rem; 
+  resize: vertical; 
+  margin-bottom: 15px; 
+  box-sizing: border-box; 
+} 
+
+.reviewTextarea::placeholder { 
+  color: #94a3b8; 
+} 
+
+.noSavedMovies { 
+  color: #94a3b8; margin-bottom: 15px; 
+} 
+
+.reviewForm button:disabled { 
+  background-color: #475569;
+  cursor: not-allowed; 
+}
+
+.communityReviews {
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+.communityReviews h2 {
+  margin-bottom: 25px;
+}
+
+.reviewList {
   display: flex;
   flex-direction: column;
-  max-width: 600px;
-  margin: 30px auto;
-  padding: 20px;
+  gap: 20px;
 }
 
-.reviewTextarea {
-  width: 100%;
-  min-height: 150px;
-  padding: 12px;
-  border: 1px solid #334155;
-  border-radius: 8px;
+.reviewTable {
   background-color: #1e293b;
   color: white;
-  font-size: 1rem;
-  resize: vertical;
-  margin-bottom: 15px;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
-.reviewTextarea::placeholder {
-  color: #94a3b8;
+.reviewRow {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  padding: 14px 18px;
+  border-bottom: 1px solid #334155;
 }
 
+.reviewRow strong {
+  color: #fb7185;
+}
+
+.reviewRow span {
+  color: #f8fafc;
+}
+
+.reviewVotes {
+  display: flex;
+  gap: 10px;
+  padding: 15px 18px;
+  background-color: #0f172a;
+}
+
+.reviewVotes button {
+  margin: 0;
+  width: auto;
+}
+
+.activeLike {
+  background-color: #16a34a;
+}
+
+.activeDislike {
+  background-color: #dc2626;
+}
 
 button {
-  background-color: #e11d48;
+  background-color: black;
   color: white;
   border: none;
   padding: 10px 18px;
@@ -102,8 +195,33 @@ button:hover {
   padding: 20px;
 }
 
+--Nav Bar Har
 .navbar {
   padding: 15px;
+}
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  padding: 15px;
+  background-color: #1e293b;
+}
+
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav a:hover {
+  color: #e11d48;
+}
+
+nav img {
+  object-fit: contain;
 }
 
 .footer {
@@ -132,9 +250,10 @@ button {
 }
 
 .pageContainer {
-  max-width: 1200px;
-  margin: 40px auto;
+  max-width: 1100px;
+  margin: 10px auto 40px;
   padding: 20px;
+
 }
 
 .searchBar {
@@ -157,3 +276,4 @@ button {
   outline: none;
   border-color: #e11d48;
 }
+

@@ -1,13 +1,6 @@
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-
 export default function About() {
   return (
     <div className="pageContainer">
-      <Header />
-      <Navbar />
-
       <main>
         <h2>About Film Finder</h2>
 
@@ -16,8 +9,6 @@ export default function About() {
           favorite movies.
         </p>
       </main>
-
-      <Footer />
     </div>
   );
 }

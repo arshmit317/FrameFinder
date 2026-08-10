@@ -1,14 +1,8 @@
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import SavedMovieCard from "../components/SavedMovieCard";
 
 export default function Watched() {
   return (
-    <>
-      <Header />
-      <Navbar />
-
+<div className="pageContainer">
      <main>
   <h2>Watched Movies</h2>
 
@@ -18,8 +12,6 @@ export default function Watched() {
     genre="Science Fiction"
   />
       </main>
-
-      <Footer />
-    </>
+</div>
   );
 }

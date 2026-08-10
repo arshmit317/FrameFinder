@@ -1,7 +1,4 @@
 import { useState } from "react";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import SearchBar from "../components/SearchBar";
 import MovieCard from "../components/MovieCard";
 
@@ -53,9 +50,6 @@ export default function Search() {
 
   return (
         <div className="pageContainer">
-      <Header />
-      <Navbar />
-
       <main>
         <h2>Search Movies</h2>
 
@@ -79,8 +73,6 @@ export default function Search() {
           ))
         )}
       </main>
-
-      <Footer />
     </div>
   );
 }

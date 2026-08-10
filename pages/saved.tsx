@@ -1,7 +1,4 @@
 import { useEffect, useState } from "react";
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import SavedMovieCard from "../components/SavedMovieCard";
 
 type Movie = {
@@ -37,9 +34,6 @@ export default function Saved() {
 
   return (
   <div className="pageContainer">
-      <Header />
-      <Navbar />
-
       <main>
         <h2>Saved Movies</h2>
 
@@ -57,8 +51,6 @@ export default function Saved() {
           ))
         )}
       </main>
-
-      <Footer />
     </div>
   );
 }

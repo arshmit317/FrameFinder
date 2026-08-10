@@ -1,7 +1,4 @@
 import { useRouter } from "next/router";
-import Header from "../../components/Header";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
 import MovieCard from "../../components/MovieCard";
 
 export default function MovieDetails() {
@@ -10,9 +7,6 @@ export default function MovieDetails() {
 
   return (
     <>
-      <Header />
-      <Navbar />
-
       <main>
         <h2>Movie Details</h2>
 
@@ -20,8 +14,6 @@ export default function MovieDetails() {
 
         <MovieCard />
       </main>
-
-      <Footer />
     </>
   );
 }

@@ -1,13 +1,6 @@
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-
 export default function Home() {
   return (
-    <>
-      <Header />
-      <Navbar />
-
+<div className="pageContainer">
       <main>
         <h2>Welcome to Film Finder</h2>
         <p>
@@ -15,8 +8,6 @@ export default function Home() {
           share reviews.
         </p>
       </main>
-
-      <Footer />
-    </>
+  </div>
   );
 }
