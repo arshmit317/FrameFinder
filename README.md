@@ -111,6 +111,16 @@ Phase 1 Completed
 - Components
 - Basic layout
 
+Phase 2 Completed 
+- Page routing and navigation
+- Dynamic movie detail routing
+- Reusable component structure
+- Movie search and filtering
+- Saved and watched movie functionality
+- Review functionality
+- Responsive styling
+- React state management
+
 ## Future Improvements
 
 - Connect to a movie API
