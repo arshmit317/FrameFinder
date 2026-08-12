@@ -1,4 +1,5 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+
 type Movie = {
   id: number;
   title: string;
@@ -11,6 +12,7 @@ type Review = {
   username: string;
   movieTitle: string;
   review: string;
+  rating: number;
   likes: number;
   dislikes: number;
 };
@@ -25,6 +27,7 @@ export default function ReviewForm({
   const [savedMovies, setSavedMovies] = useState<Movie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState("");
   const [reviewText, setReviewText] = useState("");
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     const storedMovies = JSON.parse(
@@ -35,15 +38,14 @@ export default function ReviewForm({
   }, []);
 
   const handleSubmit = (event: React.FormEvent) => {
-  event.preventDefault();
+    event.preventDefault();
 
-    if (!selectedMovie || !reviewText.trim()) {
+    if (!selectedMovie || !reviewText.trim() || rating === 0) {
       return;
     }
 
     const movie = savedMovies.find(
-      (movie) =>
-        movie.id.toString() === selectedMovie
+      (movie) => movie.id.toString() === selectedMovie
     );
 
     if (!movie) {
@@ -55,6 +57,7 @@ export default function ReviewForm({
       username: "You",
       movieTitle: movie.title,
       review: reviewText.trim(),
+      rating: rating,
       likes: 0,
       dislikes: 0,
     };
@@ -63,13 +66,11 @@ export default function ReviewForm({
 
     setSelectedMovie("");
     setReviewText("");
+    setRating(0);
   };
 
   return (
-    <form
-      className="reviewForm"
-      onSubmit={handleSubmit}
-    >
+    <form className="reviewForm" onSubmit={handleSubmit}>
       <label htmlFor="movieSelect">
         Select a saved movie
       </label>
@@ -83,25 +84,17 @@ export default function ReviewForm({
         }
         required
       >
-        <option value="">
-          Choose a movie...
-        </option>
+        <option value="">Choose a movie...</option>
 
         {savedMovies.map((movie) => (
-          <option
-            key={movie.id}
-            value={movie.id}
-          >
+          <option key={movie.id} value={movie.id}>
             {movie.title} ({movie.year})
           </option>
         ))}
       </select>
 
       {savedMovies.length === 0 && (
-        <p>
-          You need to save a movie before writing
-          a review.
-        </p>
+        <p>You need to save a movie before writing a review.</p>
       )}
 
       <textarea
@@ -114,12 +107,31 @@ export default function ReviewForm({
         required
       />
 
+      <label>
+        Your Rating
+      </label>
+
+      <div className="ratingStars">
+        <h2>Rating:</h2>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            type="button"
+            key={star}
+            className={star <= rating ? "star selected" : "star"}
+            onClick={() => setRating(star)}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+
       <button
         type="submit"
         disabled={
           savedMovies.length === 0 ||
           !selectedMovie ||
-          !reviewText.trim()
+          !reviewText.trim() ||
+          rating === 0
         }
       >
         Submit Review
@@ -127,4 +139,3 @@ export default function ReviewForm({
     </form>
   );
 }
-//Review Form

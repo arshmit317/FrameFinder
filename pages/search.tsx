@@ -3,7 +3,7 @@ import SearchBar from "../components/SearchBar";
 import MovieCard from "../components/MovieCard";
 import MovieFilters from "../components/MovieFilters";
 
-const sampleMovies = [
+export const sampleMovies = [
   {
     id: 1,
     title: "Interstellar",

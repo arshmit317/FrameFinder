@@ -5,6 +5,7 @@ type Review = {
   username: string;
   movieTitle: string;
   review: string;
+  rating: number;
   likes: number;
   dislikes: number;
 };
@@ -30,10 +31,8 @@ export default function Reviews({
     <div className="pageContainer">
       <h1>Movie Reviews</h1>
 
-      {/* Review form */}
       <ReviewForm addReview={addReview} />
 
-      {/* Community reviews */}
       <section className="communityReviews">
         <h2>Community Reviews</h2>
 
@@ -42,10 +41,7 @@ export default function Reviews({
         ) : (
           <div className="reviewList">
             {reviews.map((review) => (
-              <div
-                className="reviewTable"
-                key={review.id}
-              >
+              <div className="reviewTable" key={review.id}>
                 <div className="reviewRow">
                   <strong>Movie</strong>
                   <span>{review.movieTitle}</span>
@@ -54,6 +50,15 @@ export default function Reviews({
                 <div className="reviewRow">
                   <strong>Reviewer</strong>
                   <span>{review.username}</span>
+                </div>
+
+                <div className="reviewRow">
+                  <strong>Rating</strong>
+                  <span className="communityRating">
+                    {"★".repeat(review.rating)}
+                    {"☆".repeat(5 - review.rating)}
+                    <small>{review.rating}/5</small>
+                  </span>
                 </div>
 
                 <div className="reviewRow">
@@ -68,23 +73,18 @@ export default function Reviews({
                         ? "activeLike"
                         : ""
                     }
-                    onClick={() =>
-                      likeReview(review.id)
-                    }
+                    onClick={() => likeReview(review.id)}
                   >
                     👍 Like {review.likes}
                   </button>
 
                   <button
                     className={
-                      userVotes[review.id] ===
-                      "dislike"
+                      userVotes[review.id] === "dislike"
                         ? "activeDislike"
                         : ""
                     }
-                    onClick={() =>
-                      dislikeReview(review.id)
-                    }
+                    onClick={() => dislikeReview(review.id)}
                   >
                     👎 Dislike {review.dislikes}
                   </button>

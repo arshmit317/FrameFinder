@@ -11,6 +11,7 @@ type Review = {
   username: string;
   movieTitle: string;
   review: string;
+  rating: number;
   likes: number;
   dislikes: number;
 };
@@ -24,7 +25,8 @@ const placeholderReviews: Review[] = [
     id: 1,
     username: "Sarah",
     movieTitle: "Inception",
-    review: "Amazing movie! The story and visuals were incredible.",
+    review: "Amazing movie!",
+    rating: 5,
     likes: 12,
     dislikes: 2,
   },
@@ -32,7 +34,9 @@ const placeholderReviews: Review[] = [
     id: 2,
     username: "Alex",
     movieTitle: "The Batman",
-    review: "The atmosphere was great and the acting was excellent.",
+    review:
+      "The atmosphere was great and the acting was excellent.",
+    rating: 4,
     likes: 8,
     dislikes: 1,
   },
@@ -40,7 +44,9 @@ const placeholderReviews: Review[] = [
     id: 3,
     username: "Jordan",
     movieTitle: "Dune",
-    review: "Beautiful cinematography and an amazing soundtrack.",
+    review:
+      "Beautiful cinematography and an amazing soundtrack.",
+    rating: 5,
     likes: 15,
     dislikes: 3,
   },
@@ -65,7 +71,28 @@ export default function App({
 
     if (savedReviews) {
       try {
-        setReviews(JSON.parse(savedReviews));
+        const storedReviews: Review[] =
+          JSON.parse(savedReviews);
+
+        // Add missing ratings to old reviews
+        const updatedReviews = storedReviews.map(
+          (review) => {
+            const placeholder =
+              placeholderReviews.find(
+                (item) => item.id === review.id
+              );
+
+            return {
+              ...review,
+              rating:
+                review.rating ??
+                placeholder?.rating ??
+                0,
+            };
+          }
+        );
+
+        setReviews(updatedReviews);
       } catch {
         setReviews(placeholderReviews);
       }
@@ -82,7 +109,7 @@ export default function App({
     setLoaded(true);
   }, []);
 
-  // Save reviews AFTER they have loaded
+  // Save reviews after they have loaded
   useEffect(() => {
     if (!loaded) return;
 
@@ -92,7 +119,7 @@ export default function App({
     );
   }, [reviews, loaded]);
 
-  // Save votes AFTER they have loaded
+  // Save votes after they have loaded
   useEffect(() => {
     if (!loaded) return;
 
@@ -112,13 +139,17 @@ export default function App({
   const likeReview = (id: number) => {
     const currentVote = userVotes[id];
 
+    // Remove like
     if (currentVote === "like") {
       setReviews((current) =>
         current.map((review) =>
           review.id === id
             ? {
                 ...review,
-                likes: Math.max(0, review.likes - 1),
+                likes: Math.max(
+                  0,
+                  review.likes - 1
+                ),
               }
             : review
         )
@@ -133,6 +164,7 @@ export default function App({
       return;
     }
 
+    // Add like / switch from dislike
     setReviews((current) =>
       current.map((review) =>
         review.id === id
@@ -141,7 +173,10 @@ export default function App({
               likes: review.likes + 1,
               dislikes:
                 currentVote === "dislike"
-                  ? Math.max(0, review.dislikes - 1)
+                  ? Math.max(
+                      0,
+                      review.dislikes - 1
+                    )
                   : review.dislikes,
             }
           : review
@@ -157,6 +192,7 @@ export default function App({
   const dislikeReview = (id: number) => {
     const currentVote = userVotes[id];
 
+    // Remove dislike
     if (currentVote === "dislike") {
       setReviews((current) =>
         current.map((review) =>
@@ -181,6 +217,7 @@ export default function App({
       return;
     }
 
+    // Add dislike / switch from like
     setReviews((current) =>
       current.map((review) =>
         review.id === id
@@ -189,7 +226,10 @@ export default function App({
               dislikes: review.dislikes + 1,
               likes:
                 currentVote === "like"
-                  ? Math.max(0, review.likes - 1)
+                  ? Math.max(
+                      0,
+                      review.likes - 1
+                    )
                   : review.likes,
             }
           : review
@@ -223,5 +263,3 @@ export default function App({
     </>
   );
 }
-//State management of reviews page with added community reviews
-// Placeholder for Database

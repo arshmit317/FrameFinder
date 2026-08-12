@@ -2,7 +2,9 @@ type SavedMovieCardProps = {
   title: string;
   year: number;
   genre: string;
-  onRemove: () => void; 
+  watched: boolean;
+  onRemove: () => void;
+  onWatched: () => void;
 };
 
 export default function SavedMovieCard({
@@ -10,6 +12,8 @@ export default function SavedMovieCard({
   year,
   genre,
   onRemove,
+  watched,
+  onWatched,
 }: SavedMovieCardProps) {
   return (
     <div className="movieCard">
@@ -24,6 +28,9 @@ export default function SavedMovieCard({
       </p>
 
       <button onClick={onRemove}>Remove from Saved</button>
+      <button onClick={onWatched} disabled={watched}>
+        {watched ? "Watched" : "Watch"}
+      </button>
     </div>
   );
 }
