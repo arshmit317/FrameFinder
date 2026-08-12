@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type MovieCardProps = {
   id: number;
@@ -8,13 +8,6 @@ type MovieCardProps = {
   onSave: () => void;
 };
 
-type SavedMovie = {
-  id: number;
-  title: string;
-  year: number;
-  genre: string;
-};
-
 export default function MovieCard({
   id,
   title,
@@ -22,28 +15,32 @@ export default function MovieCard({
   genre,
   onSave,
 }: MovieCardProps) {
-  const [saved, setSaved] = useState(false);
-
-  // Check localStorage when the card loads
-  useEffect(() => {
-    const savedMovies: SavedMovie[] = JSON.parse(
+  const handleSave = () => {
+    const savedMovies = JSON.parse(
       window.localStorage.getItem("savedMovies") || "[]"
     );
 
     const alreadySaved = savedMovies.some(
-      (movie) => movie.id === id
+      (movie: { id: number }) => movie.id === id
     );
 
-    setSaved(alreadySaved);
-  }, [id]);
-
-  const handleSave = () => {
-    if (saved) return;
+    if (alreadySaved) {
+      return;
+    }
 
     onSave();
-
-    setSaved(true);
   };
+
+  const savedMovies =
+    typeof window !== "undefined"
+      ? JSON.parse(
+          window.localStorage.getItem("savedMovies") || "[]"
+        )
+      : [];
+
+  const saved = savedMovies.some(
+    (movie: { id: number }) => movie.id === id
+  );
 
   return (
     <div className="movieCard">
@@ -60,6 +57,10 @@ export default function MovieCard({
       <button onClick={handleSave} disabled={saved}>
         {saved ? "Saved" : "Add to Saved"}
       </button>
+
+      <Link href={`/movie/${id}`}>
+        View Details
+      </Link>
     </div>
   );
 }

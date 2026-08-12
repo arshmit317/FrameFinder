@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type WatchedMovie = {
   id: number;
@@ -18,26 +18,39 @@ type Review = {
 };
 
 export default function Watched() {
-  const [watchedMovies, setWatchedMovies] = useState<WatchedMovie[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
-
-  useEffect(() => {
-    const storedMovies = window.localStorage.getItem("watchedMovies");
-    const storedReviews = window.localStorage.getItem("reviews");
+  const [watchedMovies] = useState<WatchedMovie[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
 
     try {
-      setWatchedMovies(
-        storedMovies ? JSON.parse(storedMovies) : []
-      );
+      const storedMovies =
+        localStorage.getItem("watchedMovies");
 
-      setReviews(
-        storedReviews ? JSON.parse(storedReviews) : []
-      );
+      return storedMovies
+        ? JSON.parse(storedMovies)
+        : [];
     } catch {
-      setWatchedMovies([]);
-      setReviews([]);
+      return [];
     }
-  }, []);
+  });
+
+  const [reviews] = useState<Review[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+
+    try {
+      const storedReviews =
+        localStorage.getItem("reviews");
+
+      return storedReviews
+        ? JSON.parse(storedReviews)
+        : [];
+    } catch {
+      return [];
+    }
+  });
 
   return (
     <div className="pageContainer">
@@ -56,15 +69,20 @@ export default function Watched() {
               );
 
               return (
-                <div className="movieCard" key={movie.id}>
+                <div
+                  className="movieCard"
+                  key={movie.id}
+                >
                   <h2>{movie.title}</h2>
 
                   <p>
-                    <strong>Year:</strong> {movie.year}
+                    <strong>Year:</strong>{" "}
+                    {movie.year}
                   </p>
 
                   <p>
-                    <strong>Genre:</strong> {movie.genre}
+                    <strong>Genre:</strong>{" "}
+                    {movie.genre}
                   </p>
 
                   <div className="movieReview">
@@ -78,7 +96,9 @@ export default function Watched() {
                           <strong>Your Rating:</strong>
 
                           <span className="stars">
-                            {"★".repeat(userReview.rating)}
+                            {"★".repeat(
+                              userReview.rating
+                            )}
                             {"☆".repeat(
                               5 - userReview.rating
                             )}
@@ -91,7 +111,7 @@ export default function Watched() {
                       </>
                     ) : (
                       <p className="noReview">
-                        You haven't reviewed this movie yet.
+                        You have not reviewed this movie yet.
                       </p>
                     )}
                   </div>

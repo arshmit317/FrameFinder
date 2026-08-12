@@ -11,9 +11,22 @@ type Movie = {
 };
 
 export default function Saved() {
-  const [savedMovies, setSavedMovies] = useState<Movie[]>(() =>
-    JSON.parse(localStorage.getItem("savedMovies") || "[]")
-  );
+  const [savedMovies, setSavedMovies] = useState<Movie[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+
+    try {
+      const storedMovies =
+        localStorage.getItem("savedMovies");
+
+      return storedMovies
+        ? JSON.parse(storedMovies)
+        : [];
+    } catch {
+      return [];
+    }
+  });
 
   const removeMovie = (id: number) => {
     const updatedMovies = savedMovies.filter(
@@ -46,14 +59,18 @@ export default function Saved() {
 
       localStorage.setItem(
         "watchedMovies",
-        JSON.stringify([...watchedMovies, watchedMovie])
+        JSON.stringify([
+          ...watchedMovies,
+          watchedMovie,
+        ])
       );
     }
 
-    const updatedMovies = savedMovies.map((savedMovie) =>
-      savedMovie.id === movie.id
-        ? { ...savedMovie, watched: true }
-        : savedMovie
+    const updatedMovies = savedMovies.map(
+      (savedMovie) =>
+        savedMovie.id === movie.id
+          ? { ...savedMovie, watched: true }
+          : savedMovie
     );
 
     localStorage.setItem(
