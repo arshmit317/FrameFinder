@@ -16,7 +16,7 @@ export default function MovieFilters({
   setRating,
 }: Props) {
   return (
-    <div>
+    <div className="movieFilters">
       <select
         value={genre}
         onChange={(e) => setGenre(e.target.value)}
