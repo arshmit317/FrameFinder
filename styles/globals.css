@@ -480,18 +480,20 @@ button:hover {
 nav {
   display: flex;
   justify-content: center;
-  gap: 25px;
+  gap: 20px;
   padding: 15px;
   background-color: #1e293b;
 }
 
-nav a {
+nav a{
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 25px;
   color: white;
   text-decoration: none;
   font-weight: 500;
+  font-size: 20px;
+  padding:10px 15px;
 }
 
 nav a:hover {
@@ -543,7 +545,7 @@ button {
   border: 1px solid #334155;
   border-radius: 8px;
   background-color: #1e293b;
-  color: rgb(115, 64, 64);
+  color: white;
   font-size: 1rem;
 }
 
