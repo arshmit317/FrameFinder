@@ -5,6 +5,7 @@ type MovieCardProps = {
   title: string;
   year: number;
   genre: string;
+  poster: string;
   onSave: () => void;
 };
 
@@ -13,6 +14,7 @@ export default function MovieCard({
   title,
   year,
   genre,
+  poster,
   onSave,
 }: MovieCardProps) {
   const handleSave = () => {
@@ -44,6 +46,14 @@ export default function MovieCard({
 
   return (
     <div className="movieCard">
+      {poster && (
+    <img
+      src={poster}
+      alt={`${title} poster`}
+      width="200"
+      height="300"
+    />
+  )}
       <h2>{title}</h2>
 
       <p>

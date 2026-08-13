@@ -1,22 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import MovieCard from "../components/MovieCard";
-import { sampleMovies } from "./search";
 
-type Movie = (typeof sampleMovies)[number];
+type Movie = {
+  id: number;
+  title: string;
+  year: number;
+  genre: string;
+  rating: number;
+  poster: string;
+};
 
 export default function Home() {
-  const [movie] = useState<Movie>(() => {
-    if (typeof window === "undefined") {
-      return sampleMovies[0];
-    }
+  const [movie, setMovie] = useState<Movie | null>(null);
 
-    try {
+  useEffect(() => {
+    const getMovies = async () => {
+      const response = await fetch("/api/movies");
+      const movies: Movie[] = await response.json();
+
       const savedMovies: Movie[] = JSON.parse(
         localStorage.getItem("savedMovies") || "[]"
       );
 
-      const availableMovie = sampleMovies.find(
+      const availableMovie = movies.find(
         (movie) =>
           !savedMovies.some(
             (savedMovie) =>
@@ -24,13 +31,13 @@ export default function Home() {
           )
       );
 
-      return availableMovie || sampleMovies[0];
-    } catch {
-      return sampleMovies[0];
-    }
-  });
+      setMovie(availableMovie || movies[0]);
+    };
 
-  const saveMovie = () => {
+    getMovies();
+  }, []);
+
+  const saveMovie = (movie: Movie) => {
     const savedMovies: Movie[] = JSON.parse(
       localStorage.getItem("savedMovies") || "[]"
     );
@@ -56,6 +63,10 @@ export default function Home() {
     }
   };
 
+  if (!movie) {
+    return null;
+  }
+
   return (
     <div className="homePage">
       <main>
@@ -69,11 +80,13 @@ export default function Home() {
         <h1>New</h1>
 
         <MovieCard
+          key={movie.id}
           id={movie.id}
           title={movie.title}
           year={movie.year}
           genre={movie.genre}
-          onSave={saveMovie}
+          poster={movie.poster}
+          onSave={() => saveMovie(movie)}
         />
 
         <Link href="/search">

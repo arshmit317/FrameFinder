@@ -1,63 +1,64 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
 import MovieCard from "../components/MovieCard";
 import MovieFilters from "../components/MovieFilters";
 
-export const sampleMovies = [
-  {
-    id: 1,
-    title: "Interstellar",
-    year: 2014,
-    genre: "Science Fiction",
-    rating: 10,
-  },
-  {
-    id: 2,
-    title: "The Dark Knight",
-    year: 2008,
-    genre: "Action",
-    rating: 8,
-  },
-  {
-    id: 3,
-    title: "Barbie",
-    year: 2023,
-    genre: "Comedy",
-    rating: 7,
-  },
-];
-type Movie = (typeof sampleMovies)[number];
+type Movie = {
+  id: number;
+  title: string;
+  year: number;
+  genre: string;
+  rating: number;
+  poster: string;
+};
 
 export default function Search() {
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [genre, setGenre] = useState("");
   const [year, setYear] = useState("");
   const [rating, setRating] = useState("");
-  
-  const saveMovie = (movie: Movie) => {
-  const savedMovies: Movie[] = JSON.parse(
-    localStorage.getItem("savedMovies") || "[]"
-  );
 
-  const alreadySaved = savedMovies.some(
-    (savedMovie: Movie) => savedMovie.id === movie.id
-  );
-
-  if (!alreadySaved) {
-    localStorage.setItem(
-      "savedMovies",
-      JSON.stringify([...savedMovies, movie])
+useEffect(() => {
+  const getMovies = async () => {
+    const response = await fetch(
+      `/api/movies?search=${encodeURIComponent(searchTerm)}` +
+      `&genre=${encodeURIComponent(genre)}` +
+      `&year=${encodeURIComponent(year)}` +
+      `&rating=${encodeURIComponent(rating)}`
     );
-  }
-};
 
-  const filteredMovies = sampleMovies.filter((movie) => {
+    const data = await response.json();
+    setMovies(data);
+  };
+
+  getMovies();
+}, [searchTerm, genre, year, rating]);
+
+  const saveMovie = (movie: Movie) => {
+    const savedMovies: Movie[] = JSON.parse(
+      localStorage.getItem("savedMovies") || "[]"
+    );
+
+    const alreadySaved = savedMovies.some(
+      (savedMovie: Movie) => savedMovie.id === movie.id
+    );
+
+    if (!alreadySaved) {
+      localStorage.setItem(
+        "savedMovies",
+        JSON.stringify([...savedMovies, movie])
+      );
+    }
+  };
+
+  const filteredMovies = movies.filter((movie) => {
     const matchesTitle = movie.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
 
     const matchesGenre =
-      genre === "" || movie.genre === genre;
+      genre === "" || movie.genre.includes(genre);
 
     const matchesYear =
       year === "" || movie.year === Number(year);
@@ -65,16 +66,16 @@ export default function Search() {
     const matchesRating =
       rating === "" || movie.rating >= Number(rating);
 
-  return (
-    matchesTitle &&
-    matchesGenre &&
-    matchesYear &&
-    matchesRating
-  );
-});
+    return (
+      matchesTitle &&
+      matchesGenre &&
+      matchesYear &&
+      matchesRating
+    );
+  });
 
   return (
-        <div className="pageContainer">
+    <div className="pageContainer">
       <main>
         <h2>Search Movies</h2>
 
@@ -82,7 +83,7 @@ export default function Search() {
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
         />
-        
+
         <MovieFilters
           genre={genre}
           setGenre={setGenre}
@@ -95,16 +96,19 @@ export default function Search() {
         {filteredMovies.length === 0 ? (
           <p>No movies found.</p>
         ) : (
-          filteredMovies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              id={movie.id}
-              title={movie.title}
-              year={movie.year}
-              genre={movie.genre}
-              onSave={() => saveMovie(movie)}
-            />
-          ))
+          <div className="movieGrid">
+            {filteredMovies.map((movie) => (
+              <MovieCard
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                year={movie.year}
+                genre={movie.genre}
+                poster={movie.poster}
+                onSave={() => saveMovie(movie)}
+              />
+            ))}
+          </div>
         )}
       </main>
     </div>
