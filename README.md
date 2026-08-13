@@ -17,6 +17,18 @@ This is a movie search web application built with **Next.js** and **TypeScript**
 - React
 - TypeScript
 - CSS
+- TMDb API
+
+
+## Movie API
+
+FrameFinder uses The Movie Database (TMDb) API to retrieve movie 
+data such as movie titles, descriptions, release dates, posters, and other movie information.
+
+To use the API locally, create a `.env.local` file in the root directory and add your TMDb API key:
+
+```env
+TMDB_API_KEY=your_api_key_here
 
 ## Project Structure
 
