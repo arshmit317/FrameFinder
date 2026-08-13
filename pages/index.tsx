@@ -69,7 +69,7 @@ export default function Home() {
 
   return (
     <div className="homePage">
-      <main>
+     <main>
         <h2>Welcome to Frame Finder</h2>
 
         <p>
