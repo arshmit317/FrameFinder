@@ -1,17 +1,45 @@
+/* eslint-disable @next/next/no-img-element */
+
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { sampleMovies } from "../search";
+
+type Movie = {
+  id: number;
+  title: string;
+  year: number;
+  genre: string;
+  rating: number;
+  poster: string;
+  overview: string;
+};
 
 export default function MovieDetails() {
   const router = useRouter();
   const { id } = router.query;
 
-  if (!router.isReady) {
+  const [movie, setMovie] = useState<Movie | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const getMovie = async () => {
+      const response = await fetch(`/api/movies?id=${id}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setMovie(data);
+      }
+
+      setLoading(false);
+    };
+
+    getMovie();
+  }, [router.isReady, id]);
+
+  if (loading) {
     return <p>Loading...</p>;
   }
-
-  const movie = sampleMovies.find(
-    (movie) => movie.id === Number(id)
-  );
 
   if (!movie) {
     return (
@@ -24,7 +52,21 @@ export default function MovieDetails() {
 
   return (
     <div className="pageContainer">
+      {movie.poster && (
+        <img
+          src={movie.poster}
+          alt={`${movie.title} poster`}
+          width="200"
+          height="300"
+        />
+      )}
+
       <h1>{movie.title}</h1>
+
+      <p>
+        <strong>About:</strong>{" "}
+        {movie.overview || "No description available."}
+      </p>
 
       <p>
         <strong>Year:</strong> {movie.year}
@@ -35,7 +77,8 @@ export default function MovieDetails() {
       </p>
 
       <p>
-        <strong>Rating:</strong> {movie.rating}/10
+        <strong>Rating:</strong>{" "}
+        {(movie.rating ?? 0).toFixed(1)}/10
       </p>
     </div>
   );
