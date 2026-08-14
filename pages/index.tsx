@@ -14,10 +14,20 @@ type Movie = {
 export default function Home() {
   const [movie, setMovie] = useState<Movie | null>(null);
 
-  useEffect(() => {
-    const getMovies = async () => {
+useEffect(() => {
+  const getMovies = async () => {
+    try {
       const response = await fetch("/api/movies");
+
+      if (!response.ok) {
+        throw new Error(
+          `API request failed: ${response.status}`
+        );
+      }
+
       const movies: Movie[] = await response.json();
+
+      console.log("Movies received:", movies);
 
       const savedMovies: Movie[] = JSON.parse(
         localStorage.getItem("savedMovies") || "[]"
@@ -32,10 +42,13 @@ export default function Home() {
       );
 
       setMovie(availableMovie || movies[0]);
-    };
+    } catch (error) {
+      console.error("Error loading movies:", error);
+    }
+  };
 
-    getMovies();
-  }, []);
+  getMovies();
+}, []);
 
   const saveMovie = (movie: Movie) => {
     const savedMovies: Movie[] = JSON.parse(
@@ -64,8 +77,8 @@ export default function Home() {
   };
 
   if (!movie) {
-    return null;
-  }
+  return <p>Loading movies...</p>;
+}
 
   return (
     <div className="homePage">
