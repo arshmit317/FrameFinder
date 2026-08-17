@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SavedMovieCard from "../components/SavedMovieCard";
 
 type Movie = {
@@ -11,22 +11,58 @@ type Movie = {
 };
 
 export default function Saved() {
-  const [savedMovies, setSavedMovies] = useState<Movie[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
+  const [savedMovies, setSavedMovies] =
+  useState<Movie[]>([]);
 
+ useEffect(() => {
+  const timer = window.setTimeout(() => {
     try {
-      const storedMovies =
-        localStorage.getItem("savedMovies");
+      const saved = localStorage.getItem(
+        "savedMovies"
+      );
 
-      return storedMovies
-        ? JSON.parse(storedMovies)
+      const watched = localStorage.getItem(
+        "watchedMovies"
+      );
+
+      const savedMovies: Movie[] = saved
+        ? JSON.parse(saved)
         : [];
-    } catch {
-      return [];
+
+      const watchedMovies: Movie[] = watched
+        ? JSON.parse(watched)
+        : [];
+
+      const watchedIds = new Set(
+        watchedMovies.map(
+          (movie) => movie.id
+        )
+      );
+
+      const updatedMovies =
+        savedMovies.map((movie) => ({
+          ...movie,
+          watched: watchedIds.has(movie.id),
+        }));
+
+      setSavedMovies(updatedMovies);
+
+      localStorage.setItem(
+        "savedMovies",
+        JSON.stringify(updatedMovies)
+      );
+    } catch (error) {
+      console.error(
+        "Failed to load saved movies:",
+        error
+      );
     }
-  });
+  }, 0);
+
+  return () => {
+    window.clearTimeout(timer);
+  };
+}, []);
 
   const removeMovie = (id: number) => {
     const updatedMovies = savedMovies.filter(

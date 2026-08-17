@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type WatchedMovie = {
   id: number;
@@ -18,39 +18,79 @@ type Review = {
 };
 
 export default function Watched() {
-  const [watchedMovies] = useState<WatchedMovie[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
+  const [watchedMovies, setWatchedMovies] =
+    useState<WatchedMovie[]>([]);
 
-    try {
-      const storedMovies =
-        localStorage.getItem("watchedMovies");
+  const [reviews, setReviews] =
+    useState<Review[]>([]);
 
-      return storedMovies
-        ? JSON.parse(storedMovies)
-        : [];
-    } catch {
-      return [];
-    }
-  });
+  /*
+   * Load localStorage after the initial render.
+   * This prevents a server/client hydration mismatch.
+   */
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      /*
+       * -----------------------------
+       * LOAD WATCHED MOVIES
+       * -----------------------------
+       */
 
-  const [reviews] = useState<Review[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
+      try {
+        const storedMovies =
+          localStorage.getItem(
+            "watchedMovies"
+          );
 
-    try {
-      const storedReviews =
-        localStorage.getItem("reviews");
+        if (storedMovies) {
+          const parsedMovies =
+            JSON.parse(storedMovies);
 
-      return storedReviews
-        ? JSON.parse(storedReviews)
-        : [];
-    } catch {
-      return [];
-    }
-  });
+          if (Array.isArray(parsedMovies)) {
+            setWatchedMovies(
+              parsedMovies as WatchedMovie[]
+            );
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Failed to load watched movies:",
+          error
+        );
+      }
+
+      /*
+       * -----------------------------
+       * LOAD REVIEWS
+       * -----------------------------
+       */
+
+      try {
+        const storedReviews =
+          localStorage.getItem("reviews");
+
+        if (storedReviews) {
+          const parsedReviews =
+            JSON.parse(storedReviews);
+
+          if (Array.isArray(parsedReviews)) {
+            setReviews(
+              parsedReviews as Review[]
+            );
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Failed to load reviews:",
+          error
+        );
+      }
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, []);
 
   return (
     <div className="pageContainer">
@@ -62,11 +102,50 @@ export default function Watched() {
         ) : (
           <div className="watchedMovies">
             {watchedMovies.map((movie) => {
-              const userReview = reviews.find(
-                (review) =>
-                  review.movieTitle === movie.title &&
-                  review.username === "You"
-              );
+              /*
+               * Get every review made for this movie.
+               */
+              const movieReviews =
+                reviews.filter(
+                  (review) =>
+                    review.movieTitle ===
+                      movie.title &&
+                    review.rating >= 0
+                );
+
+              /*
+               * Calculate the average rating.
+               */
+              const averageRating =
+                movieReviews.length > 0
+                  ? movieReviews.reduce(
+                      (total, review) =>
+                        total +
+                        review.rating,
+                      0
+                    ) /
+                    movieReviews.length
+                  : 0;
+
+              /*
+               * Find the current user's review.
+               */
+              const userReview =
+                reviews.find(
+                  (review) =>
+                    review.movieTitle ===
+                      movie.title &&
+                    review.username === "You"
+                );
+
+              /*
+               * Round the average for
+               * displaying stars.
+               */
+              const roundedAverage =
+                Math.round(
+                  averageRating
+                );
 
               return (
                 <div
@@ -76,42 +155,136 @@ export default function Watched() {
                   <h2>{movie.title}</h2>
 
                   <p>
-                    <strong>Year:</strong>{" "}
+                    <strong>
+                      Year:
+                    </strong>{" "}
                     {movie.year}
                   </p>
 
                   <p>
-                    <strong>Genre:</strong>{" "}
+                    <strong>
+                      Genre:
+                    </strong>{" "}
                     {movie.genre}
                   </p>
 
+                  {/* 
+                   * -------------------------
+                   * AVERAGE USER RATING
+                   * -------------------------
+                   */}
+
+                  <div className="averageRating">
+                    <strong>
+                      Average User Rating:
+                    </strong>{" "}
+
+                    {movieReviews.length >
+                    0 ? (
+                      <>
+                        <span className="stars">
+                          {"★".repeat(
+                            roundedAverage
+                          )}
+
+                          {"☆".repeat(
+                            5 -
+                              roundedAverage
+                          )}
+                        </span>
+
+                        <span className="ratingNumber">
+                          {" "}
+                          {averageRating.toFixed(
+                            2
+                          )}
+                          /5
+                        </span>
+
+                        <span>
+                          {" "}
+                          (
+                          {
+                            movieReviews.length
+                          }{" "}
+                          {movieReviews.length ===
+                          1
+                            ? "review"
+                            : "reviews"}
+                          )
+                        </span>
+                      </>
+                    ) : (
+                      <span>
+                        {" "}
+                        No ratings yet
+                      </span>
+                    )}
+                  </div>
+
+                  {/* 
+                   * -------------------------
+                   * USER'S REVIEW
+                   * -------------------------
+                   */}
+
                   <div className="movieReview">
-                    <strong>Your Review:</strong>
+                    <strong>
+                      Your Review:
+                    </strong>
 
                     {userReview ? (
                       <>
-                        <p>{userReview.review}</p>
+                        <p>
+                          {
+                            userReview.review
+                          }
+                        </p>
 
                         <div className="userRating">
-                          <strong>Your Rating:</strong>
+                          <strong>
+                            Your Rating:
+                          </strong>
 
                           <span className="stars">
                             {"★".repeat(
-                              userReview.rating
+                              Math.max(
+                                0,
+                                Math.min(
+                                  5,
+                                  userReview.rating
+                                )
+                              )
                             )}
+
                             {"☆".repeat(
-                              5 - userReview.rating
+                              Math.max(
+                                0,
+                                5 -
+                                  Math.max(
+                                    0,
+                                    Math.min(
+                                      5,
+                                      userReview.rating
+                                    )
+                                  )
+                              )
                             )}
                           </span>
 
                           <span className="ratingNumber">
-                            {userReview.rating}/5
+                            {
+                              userReview.rating
+                            }
+                            /5
                           </span>
                         </div>
                       </>
                     ) : (
                       <p className="noReview">
-                        You have not reviewed this movie yet.
+                        You have not
+                        reviewed this
+                        movie yet.
                       </p>
                     )}
                   </div>

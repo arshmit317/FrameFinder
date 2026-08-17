@@ -1,9 +1,12 @@
-import type { AppProps } from "next/app";
-import { useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
 
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+
 import "../styles/globals.css";
 
 type Review = {
@@ -20,277 +23,429 @@ type UserVotes = {
   [reviewId: number]: "like" | "dislike";
 };
 
-const placeholderReviews: Review[] = [
-  {
-    id: 1,
-    username: "Sarah",
-    movieTitle: "Inception",
-    review: "Amazing movie!",
-    rating: 5,
-    likes: 12,
-    dislikes: 2,
-  },
-  {
-    id: 2,
-    username: "Alex",
-    movieTitle: "The Batman",
-    review:
-      "The atmosphere was great and the acting was excellent.",
-    rating: 4,
-    likes: 8,
-    dislikes: 1,
-  },
-  {
-    id: 3,
-    username: "Jordan",
-    movieTitle: "Dune",
-    review:
-      "Beautiful cinematography and an amazing soundtrack.",
-    rating: 5,
-    likes: 15,
-    dislikes: 3,
-  },
-];
+type ReviewPageProps = {
+  reviews: Review[];
+  addReview: (review: Review) => void;
+  updateReview: (review: Review) => void;
+  deleteReview: (id: number) => void;
+  likeReview: (id: number) => void;
+  dislikeReview: (id: number) => void;
+  userVotes: UserVotes;
+};
 
-function getSavedReviews(): Review[] {
-  if (typeof window === "undefined") {
-    return placeholderReviews;
-  }
+type PageComponent = React.ComponentType<
+  ReviewPageProps
+>;
 
-  try {
-    const savedReviews = localStorage.getItem("reviews");
+type AppProps = {
+  Component: PageComponent;
+  pageProps: Record<string, unknown>;
+};
 
-    if (!savedReviews) {
-      return placeholderReviews;
-    }
-
-    const storedReviews: Review[] =
-      JSON.parse(savedReviews);
-
-    return storedReviews.map((review) => {
-      const placeholder = placeholderReviews.find(
-        (item) => item.id === review.id
-      );
-
-      return {
-        ...review,
-        rating:
-          review.rating ??
-          placeholder?.rating ??
-          0,
-      };
-    });
-  } catch {
-    return placeholderReviews;
-  }
-}
-
-function getSavedVotes(): UserVotes {
-  if (typeof window === "undefined") {
-    return {};
-  }
-
-  try {
-    const savedVotes =
-      localStorage.getItem("userVotes");
-
-    return savedVotes
-      ? JSON.parse(savedVotes)
-      : {};
-  } catch {
-    return {};
-  }
-}
 
 export default function App({
   Component,
   pageProps,
 }: AppProps) {
+  /*
+   * IMPORTANT:
+   *
+   * Do not read localStorage here.
+   *
+   * The server and the first client render must
+   * start with exactly the same data.
+   */
+
   const [reviews, setReviews] =
-    useState<Review[]>(getSavedReviews);
+    useState<Review[]>([]);
 
   const [userVotes, setUserVotes] =
-    useState<UserVotes>(getSavedVotes);
+    useState<UserVotes>({});
 
-  const addReview = (review: Review) => {
-    setReviews((current) => {
+  /*
+   * ----------------------------------------
+   * LOAD SAVED REVIEWS AND VOTES
+   * ----------------------------------------
+   *
+   * The timeout prevents the React lint rule
+   * from complaining about synchronous
+   * setState inside useEffect.
+   */
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      /*
+       * Load reviews
+       */
+
+      try {
+        const savedReviews =
+          localStorage.getItem("reviews");
+
+        if (savedReviews) {
+          const parsedReviews =
+            JSON.parse(savedReviews);
+
+          if (Array.isArray(parsedReviews)) {
+            setReviews(
+              parsedReviews as Review[]
+            );
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Failed to load reviews:",
+          error
+        );
+      }
+
+      /*
+       * Load votes
+       */
+
+      try {
+        const savedVotes =
+          localStorage.getItem("userVotes");
+
+        if (savedVotes) {
+          const parsedVotes =
+            JSON.parse(savedVotes);
+
+          if (
+            parsedVotes !== null &&
+            typeof parsedVotes === "object" &&
+            !Array.isArray(parsedVotes)
+          ) {
+            setUserVotes(
+              parsedVotes as UserVotes
+            );
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Failed to load user votes:",
+          error
+        );
+      }
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+  /*
+   * ----------------------------------------
+   * SAVE REVIEWS
+   * ----------------------------------------
+   */
+
+  const saveReviews = (
+    updatedReviews: Review[]
+  ) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "reviews",
+        JSON.stringify(updatedReviews)
+      );
+    }
+  };
+
+  /*
+   * ----------------------------------------
+   * SAVE VOTES
+   * ----------------------------------------
+   */
+
+  const saveUserVotes = (
+    updatedVotes: UserVotes
+  ) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "userVotes",
+        JSON.stringify(updatedVotes)
+      );
+    }
+  };
+
+  /*
+   * ----------------------------------------
+   * ADD REVIEW
+   * ----------------------------------------
+   */
+
+  const addReview = (
+    review: Review
+  ) => {
+    setReviews((currentReviews) => {
       const updatedReviews = [
-        ...current,
+        ...currentReviews,
         review,
       ];
 
-      localStorage.setItem(
-        "reviews",
-        JSON.stringify(updatedReviews)
-      );
+      saveReviews(updatedReviews);
 
       return updatedReviews;
     });
   };
 
-  const likeReview = (id: number) => {
-    const currentVote = userVotes[id];
+  /*
+   * ----------------------------------------
+   * UPDATE REVIEW
+   * ----------------------------------------
+   */
 
-    if (currentVote === "like") {
-      setReviews((current) => {
-        const updatedReviews = current.map(
+  const updateReview = (
+    updatedReview: Review
+  ) => {
+    setReviews((currentReviews) => {
+      const updatedReviews =
+        currentReviews.map((review) => {
+          if (
+            review.id !==
+            updatedReview.id
+          ) {
+            return review;
+          }
+
+          return {
+            ...review,
+            movieTitle:
+              updatedReview.movieTitle,
+            review:
+              updatedReview.review,
+            rating:
+              updatedReview.rating,
+          };
+        });
+
+      saveReviews(updatedReviews);
+
+      return updatedReviews;
+    });
+  };
+
+  /*
+   * ----------------------------------------
+   * DELETE REVIEW
+   * ----------------------------------------
+   */
+
+  const deleteReview = (
+    id: number
+  ) => {
+    setReviews((currentReviews) => {
+      const updatedReviews =
+        currentReviews.filter(
           (review) =>
-            review.id === id
-              ? {
-                  ...review,
-                  likes: Math.max(
-                    0,
-                    review.likes - 1
-                  ),
-                }
-              : review
+            review.id !== id
         );
 
-        localStorage.setItem(
-          "reviews",
-          JSON.stringify(updatedReviews)
-        );
-
-        return updatedReviews;
-      });
-
-      setUserVotes((current) => {
-        const updated = { ...current };
-        delete updated[id];
-
-        localStorage.setItem(
-          "userVotes",
-          JSON.stringify(updated)
-        );
-
-        return updated;
-      });
-
-      return;
-    }
-
-    setReviews((current) => {
-      const updatedReviews = current.map(
-        (review) =>
-          review.id === id
-            ? {
-                ...review,
-                likes: review.likes + 1,
-                dislikes:
-                  currentVote === "dislike"
-                    ? Math.max(
-                        0,
-                        review.dislikes - 1
-                      )
-                    : review.dislikes,
-              }
-            : review
-      );
-
-      localStorage.setItem(
-        "reviews",
-        JSON.stringify(updatedReviews)
-      );
+      saveReviews(updatedReviews);
 
       return updatedReviews;
     });
 
-    setUserVotes((current) => {
-      const updated = {
-        ...current,
-        [id]: "like" as const,
+    /*
+     * Also remove the user's vote
+     * for the deleted review.
+     */
+
+    setUserVotes((currentVotes) => {
+      const updatedVotes = {
+        ...currentVotes,
       };
 
-      localStorage.setItem(
-        "userVotes",
-        JSON.stringify(updated)
-      );
+      delete updatedVotes[id];
 
-      return updated;
+      saveUserVotes(updatedVotes);
+
+      return updatedVotes;
     });
   };
 
-  const dislikeReview = (id: number) => {
-    const currentVote = userVotes[id];
+  /*
+   * ----------------------------------------
+   * LIKE REVIEW
+   * ----------------------------------------
+   */
 
-    if (currentVote === "dislike") {
-      setReviews((current) => {
-        const updatedReviews = current.map(
-          (review) =>
-            review.id === id
-              ? {
-                  ...review,
-                  dislikes: Math.max(
+  const likeReview = (
+    id: number
+  ) => {
+    const currentVote =
+      userVotes[id];
+
+    setReviews((currentReviews) => {
+      const updatedReviews =
+        currentReviews.map((review) => {
+          if (review.id !== id) {
+            return review;
+          }
+
+          /*
+           * Clicking an existing like
+           * removes the like.
+           */
+
+          if (currentVote === "like") {
+            return {
+              ...review,
+              likes: Math.max(
+                0,
+                review.likes - 1
+              ),
+            };
+          }
+
+          /*
+           * Otherwise add a like.
+           *
+           * If the user previously disliked
+           * the review, remove that dislike.
+           */
+
+          return {
+            ...review,
+            likes:
+              review.likes + 1,
+            dislikes:
+              currentVote ===
+              "dislike"
+                ? Math.max(
                     0,
                     review.dislikes - 1
-                  ),
-                }
-              : review
-        );
+                  )
+                : review.dislikes,
+          };
+        });
 
-        localStorage.setItem(
-          "reviews",
-          JSON.stringify(updatedReviews)
-        );
-
-        return updatedReviews;
-      });
-
-      setUserVotes((current) => {
-        const updated = { ...current };
-        delete updated[id];
-
-        localStorage.setItem(
-          "userVotes",
-          JSON.stringify(updated)
-        );
-
-        return updated;
-      });
-
-      return;
-    }
-
-    setReviews((current) => {
-      const updatedReviews = current.map(
-        (review) =>
-          review.id === id
-            ? {
-                ...review,
-                dislikes: review.dislikes + 1,
-                likes:
-                  currentVote === "like"
-                    ? Math.max(
-                        0,
-                        review.likes - 1
-                      )
-                    : review.likes,
-              }
-            : review
-      );
-
-      localStorage.setItem(
-        "reviews",
-        JSON.stringify(updatedReviews)
-      );
+      saveReviews(updatedReviews);
 
       return updatedReviews;
     });
 
-    setUserVotes((current) => {
-      const updated = {
-        ...current,
-        [id]: "dislike" as const,
+    setUserVotes((currentVotes) => {
+      const updatedVotes = {
+        ...currentVotes,
       };
 
-      localStorage.setItem(
-        "userVotes",
-        JSON.stringify(updated)
-      );
+      if (currentVote === "like") {
+        delete updatedVotes[id];
+      } else {
+        updatedVotes[id] = "like";
+      }
 
-      return updated;
+      saveUserVotes(updatedVotes);
+
+      return updatedVotes;
     });
   };
+
+  /*
+   * ----------------------------------------
+   * DISLIKE REVIEW
+   * ----------------------------------------
+   */
+
+  const dislikeReview = (
+    id: number
+  ) => {
+    const currentVote =
+      userVotes[id];
+
+    setReviews((currentReviews) => {
+      const updatedReviews =
+        currentReviews.map((review) => {
+          if (review.id !== id) {
+            return review;
+          }
+
+          /*
+           * Clicking an existing dislike
+           * removes the dislike.
+           */
+
+          if (
+            currentVote ===
+            "dislike"
+          ) {
+            return {
+              ...review,
+              dislikes: Math.max(
+                0,
+                review.dislikes - 1
+              ),
+            };
+          }
+
+          /*
+           * Otherwise add a dislike.
+           *
+           * If the user previously liked
+           * the review, remove that like.
+           */
+
+          return {
+            ...review,
+            dislikes:
+              review.dislikes + 1,
+            likes:
+              currentVote === "like"
+                ? Math.max(
+                    0,
+                    review.likes - 1
+                  )
+                : review.likes,
+          };
+        });
+
+      saveReviews(updatedReviews);
+
+      return updatedReviews;
+    });
+
+    setUserVotes((currentVotes) => {
+      const updatedVotes = {
+        ...currentVotes,
+      };
+
+      if (
+        currentVote ===
+        "dislike"
+      ) {
+        delete updatedVotes[id];
+      } else {
+        updatedVotes[id] = "dislike";
+      }
+
+      saveUserVotes(updatedVotes);
+
+      return updatedVotes;
+    });
+  };
+
+  /*
+   * ----------------------------------------
+   * PAGE PROPS
+   * ----------------------------------------
+   */
+
+  const reviewPageProps: ReviewPageProps = {
+    reviews,
+    addReview,
+    updateReview,
+    deleteReview,
+    likeReview,
+    dislikeReview,
+    userVotes,
+  };
+
+  /*
+   * ----------------------------------------
+   * RENDER
+   * ----------------------------------------
+   */
 
   return (
     <>
@@ -300,12 +455,8 @@ export default function App({
 
       <main>
         <Component
+          {...reviewPageProps}
           {...pageProps}
-          reviews={reviews}
-          addReview={addReview}
-          likeReview={likeReview}
-          dislikeReview={dislikeReview}
-          userVotes={userVotes}
         />
       </main>
 
