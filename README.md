@@ -29,6 +29,7 @@ To use the API locally, create a `.env.local` file in the root directory and add
 
 ```env
 TMDB_API_KEY=your_api_key_here
+```
 
 ## Project Structure
 
