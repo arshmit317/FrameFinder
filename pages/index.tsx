@@ -12,43 +12,43 @@ type Movie = {
 };
 
 export default function Home() {
-  const [movie, setMovie] = useState<Movie | null>(null);
+  const [movies, setMovies] = useState<Movie[]>([]);
 
-useEffect(() => {
-  const getMovies = async () => {
-    try {
-      const response = await fetch("/api/movies");
+  useEffect(() => {
+    const getMovies = async () => {
+      try {
+        const response = await fetch("/api/movies");
 
-      if (!response.ok) {
-        throw new Error(
-          `API request failed: ${response.status}`
+        if (!response.ok) {
+          throw new Error(
+            `API request failed: ${response.status}`
+          );
+        }
+
+        const movieData: Movie[] = await response.json();
+
+        console.log("Movies received:", movieData);
+
+        const savedMovies: Movie[] = JSON.parse(
+          localStorage.getItem("savedMovies") || "[]"
         );
+
+        const availableMovies = movieData.filter(
+          (movie) =>
+            !savedMovies.some(
+              (savedMovie) =>
+                savedMovie.id === movie.id
+            )
+        );
+
+        setMovies(availableMovies);
+      } catch (error) {
+        console.error("Error loading movies:", error);
       }
+    };
 
-      const movies: Movie[] = await response.json();
-
-      console.log("Movies received:", movies);
-
-      const savedMovies: Movie[] = JSON.parse(
-        localStorage.getItem("savedMovies") || "[]"
-      );
-
-      const availableMovie = movies.find(
-        (movie) =>
-          !savedMovies.some(
-            (savedMovie) =>
-              savedMovie.id === movie.id
-          )
-      );
-
-      setMovie(availableMovie || movies[0]);
-    } catch (error) {
-      console.error("Error loading movies:", error);
-    }
-  };
-
-  getMovies();
-}, []);
+    getMovies();
+  }, []);
 
   const saveMovie = (movie: Movie) => {
     const savedMovies: Movie[] = JSON.parse(
@@ -76,13 +76,13 @@ useEffect(() => {
     }
   };
 
-  if (!movie) {
-  return <p>Loading movies...</p>;
-}
+  if (movies.length === 0) {
+    return <p>Loading movies...</p>;
+  }
 
   return (
     <div className="homePage">
-     <main>
+      <main>
         <h2>Welcome to Frame Finder</h2>
 
         <p>
@@ -92,15 +92,19 @@ useEffect(() => {
 
         <h1>New</h1>
 
-        <MovieCard
-          key={movie.id}
-          id={movie.id}
-          title={movie.title}
-          year={movie.year}
-          genre={movie.genre}
-          poster={movie.poster}
-          onSave={() => saveMovie(movie)}
-        />
+        <div className="movieGrid">
+          {movies.slice(0, 3).map((movie) => (
+            <MovieCard
+              key={movie.id}
+              id={movie.id}
+              title={movie.title}
+              year={movie.year}
+              genre={movie.genre}
+              poster={movie.poster}
+              onSave={() => saveMovie(movie)}
+            />
+          ))}
+        </div>
 
         <Link href="/search">
           Browse All Movies
